@@ -96,30 +96,28 @@ var TeamDriveclass = function(){
       supportsTeamDrives: true,
       includeTeamDriveItems: true
     };
-    
     return Drive.Files.remove(elementid,params);
-    
   }
   
-  this.renameElement = function (elementid){
+  this.renameElement = function (elementid,newname){
+    var metadata = {
+      fileId: elementid,
+      //addParents: commaStringOfParents,
+      //removeParents: commaStringOfParents,
+      resource: { title : newname }
+    }
+    var params = {
+      supportsTeamDrives: true,
+      includeTeamDriveItems: true
+    }
     
-    var body = {'title': newTitle};
-    var request = gapi.client.drive.files.patch({
-      'fileId': fileId,
-      'resource': body
-    });
-    request.execute(function(resp) {
-      console.log('New Title: ' + resp.title);
-    });
-    
-    
+    return Drive.Files.update({title: newname}, elementid,null,params); 
   }
-  
 }
 
 function test(){
   var teamdrive = new TeamDriveclass();
   //teamdrive.copyFolderContent ("1CFfvA5GRVIoxz34OJFx6w-wo7R-coQ23","1T6ZDOX07kOR6ID3Dsfywwp5AsFPBVKBL")
-  teamdrive.moveFolderContent("1VkQoTlnXZvf23hBfplRy03SHsuAGOOTg");
+  teamdrive.renameElement("1yh1yXojhDGQ5MtRFWF4kAefg3EV5jr2MgWo3W-S4CaY","Juan");
 }
 
