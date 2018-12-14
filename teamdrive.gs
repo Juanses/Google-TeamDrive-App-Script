@@ -1,4 +1,6 @@
 //You need to activate advance services : https://developers.google.com/apps-script/advanced/drive
+// https://developers.google.com/drive/api/v2/reference/files/copy#request-body
+
 var TeamDriveclass = function(){
   
   this.createSubFolder = function (parentId, title) {
@@ -31,7 +33,7 @@ var TeamDriveclass = function(){
     
     do {
       //I get the list of the files and folders
-      var drivelist = Drive.Files.list({ 
+      var drivelist = Drive.Files.list({
         pageSize: 100,
         includeTeamDriveItems: true,
         supportsTeamDrives: true,
@@ -66,10 +68,7 @@ var TeamDriveclass = function(){
     };
     const metadata = {
       title: newName,
-      // Team Drives files & folders can have only 1 parent
-      parents: [ {id: targetFolderId} ],
-      // other possible fields you can supply: 
-      // https://developers.google.com/drive/api/v2/reference/files/copy#request-body
+      parents: [ {id: targetFolderId} ]      
     };
     
     return Drive.Files.copy(metadata, sourceId, options);
@@ -81,15 +80,46 @@ var TeamDriveclass = function(){
       if (elements[i]["type"] == "File"){
         this.copyFile(elements[i]["title"], elements[i]["id"],destinationfolder);
       }else{
-        var newfolder = createSubFolder(destinationfolder, elements[i]["title"]);
+        var newfolder = this.createSubFolder(destinationfolder, elements[i]["title"]);
         this.copyFolderContent (elements[i]["id"],newfolder["id"]);
       }
     } 
+  };
+  
+  this.moveFolderContent = function  (sourcefolder, destinationfolder){
+    this.copyFolderContent(sourcefolder,destinationfolder);
+    this.RemoveElementfromDrive(sourcefolder);
+  }
+  
+  this.RemoveElement = function (elementid) {
+    var params = {
+      supportsTeamDrives: true,
+      includeTeamDriveItems: true
+    };
+    
+    return Drive.Files.remove(elementid,params);
+    
+  }
+  
+  this.renameElement = function (elementid){
+    
+    var body = {'title': newTitle};
+    var request = gapi.client.drive.files.patch({
+      'fileId': fileId,
+      'resource': body
+    });
+    request.execute(function(resp) {
+      console.log('New Title: ' + resp.title);
+    });
+    
+    
   }
   
 }
 
 function test(){
-  recursive ("1CFfvA5GRVIoxz34OJFx6w-wo7R-coQ23","1T6ZDOX07kOR6ID3Dsfywwp5AsFPBVKBL")
+  var teamdrive = new TeamDriveclass();
+  //teamdrive.copyFolderContent ("1CFfvA5GRVIoxz34OJFx6w-wo7R-coQ23","1T6ZDOX07kOR6ID3Dsfywwp5AsFPBVKBL")
+  teamdrive.moveFolderContent("1VkQoTlnXZvf23hBfplRy03SHsuAGOOTg");
 }
 
