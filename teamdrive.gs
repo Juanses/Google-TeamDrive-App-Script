@@ -27,6 +27,20 @@ var TeamDriveclass = function(){
     return Drive.Files.insert(metadata, null, params);
   }
   
+  this.getElementIdfromFolder = function (folderid,elementname) {
+    var elementlist = teamdrive.getListofElementsinFolder(newfolder["id"]);
+    var found = false;
+    for (var key in elementlist){
+      if (elementlist[key]["title"].indexOf("elementname") != -1){
+        found = true;
+         return elementlist[key]["id"];
+      };
+    }
+    if (!found){
+      return "Non trouvé";
+    }
+  }
+  
   this.getListofElementsinFolder = function (folderid){
     var pageToken
     var results = []; //The result
@@ -110,14 +124,15 @@ var TeamDriveclass = function(){
       supportsTeamDrives: true,
       includeTeamDriveItems: true
     }
-    
     return Drive.Files.update({title: newname}, elementid,null,params); 
   }
+
 }
 
-function test(){
+
+/*function test(){
   var teamdrive = new TeamDriveclass();
   //teamdrive.copyFolderContent ("1CFfvA5GRVIoxz34OJFx6w-wo7R-coQ23","1T6ZDOX07kOR6ID3Dsfywwp5AsFPBVKBL")
   teamdrive.renameElement("1yh1yXojhDGQ5MtRFWF4kAefg3EV5jr2MgWo3W-S4CaY","Juan");
-}
+}*/
 
